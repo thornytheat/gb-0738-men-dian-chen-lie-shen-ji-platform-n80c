@@ -17,3 +17,15 @@
     <div class="account-body" id="account"><p class="empty">待首笔巡检结算。</p></div>
   </section>
 </div>
+<section class="panel closing" id="closing-panel" aria-labelledby="closing-title">
+  <div class="panel-header">
+    <h2 id="closing-title">期末结转</h2>
+    <span class="panel-meta" id="closing-meta">按门店拆分已结与留待</span>
+  </div>
+  <div id="closing" class="figure-body"><p class="empty">运行审计后核对待结金额。</p></div>
+  <div class="closing-actions">
+    <button id="publish-closing" class="button primary" type="button" disabled>生成结转</button>
+    <a id="closing-statement" class="button quiet" aria-disabled="true">下载结转单</a>
+    <span id="closing-feedback" role="status" aria-live="polite"></span>
+  </div>
+</section>

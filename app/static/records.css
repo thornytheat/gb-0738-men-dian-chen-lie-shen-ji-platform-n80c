@@ -30,9 +30,9 @@ input, select { border: 1px solid var(--line-2); border-radius: 4px; background:
 .case-item > span:nth-child(3) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .case-item > span:last-child { text-align: right; }
 .flag { display: inline-block; padding: 2px 4px; font-size: 10px; white-space: nowrap; font-weight: 700; border: 1px solid currentColor; border-radius: 2px; color: var(--ink-2); }
-.flag[data-status=COMPLIANT], .flag[data-status=BALANCED], .flag[data-status=UPHELD] { color: var(--ok); background: var(--ok-tint); }
-.flag[data-status=VIOLATION] { color: var(--bad); background: var(--bad-tint); }
-.flag[data-status=PENDING], .flag[data-status=OPEN] { color: var(--warn); background: var(--warn-tint); }
+.flag[data-status=COMPLIANT], .flag[data-status=BALANCED], .flag[data-status=UPHELD], .flag[data-status=CLOSED], .flag[data-status=SETTLED] { color: var(--ok); background: var(--ok-tint); }
+.flag[data-status=VIOLATION], .flag[data-status=REVERSED] { color: var(--bad); background: var(--bad-tint); }
+.flag[data-status=PENDING], .flag[data-status=OPEN], .flag[data-status=HELD], .flag[data-status=PARTIAL] { color: var(--warn); background: var(--warn-tint); }
 .flag[data-status=ISOLATED] { color: var(--info); background: var(--info-tint); }
 .account-body { display: grid; align-content: start; padding: 3px var(--pad) 10px; min-height: 150px; }
 .money-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 8px; border-bottom: 1px solid var(--line); min-height: var(--row); }

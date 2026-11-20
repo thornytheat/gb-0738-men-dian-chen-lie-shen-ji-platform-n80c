@@ -17,14 +17,14 @@ node_modules/
 .pnpm-store/
 dist/
 build/
-out/
+/out/
 .next/
 .nuxt/
 .output/
 .cache/
 .vite/
 .parcel-cache/
-coverage/
+/coverage/
 *.pyc
 venv/
 target/

@@ -65,3 +65,28 @@ h1 { font-size: clamp(29px, 3.5vw, 49px); line-height: 1.13; letter-spacing: -.0
   .quality-grid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+.closing { margin-top: var(--gap); }
+.closing-body { display: grid; gap: 10px; }
+.closing-totals { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.closing-total { border: 1px solid var(--line); border-radius: 5px; padding: 6px 9px; text-align: right; background: var(--panel-2); }
+.closing-total span { display: block; text-align: left; font-size: 11px; color: var(--ink-3); }
+.closing-total strong { font-size: 18px; }
+.closing-total.closed strong { color: var(--ok); }
+.closing-total.held strong, .closing-total.advance strong { color: var(--warn); }
+.closing-table { border-spacing: 0; table-layout: auto; }
+.closing-table th, .closing-table td { border-bottom: 1px solid var(--line); padding: 6px 8px; font-size: 12px; text-align: right; }
+.closing-table th:first-child, .closing-table td:first-child { text-align: left; }
+.closing-table th[scope=col] { font-size: 11px; color: var(--ink-2); }
+.closing-table td.closed-cell { color: var(--ok); font-weight: 650; }
+.closing-table td.held-cell { color: var(--warn); font-weight: 650; }
+.closing-table .closing-foot th, .closing-table .closing-foot td { border-bottom: 0; border-top: 2px solid var(--line-2); font-weight: 700; background: var(--panel-2); }
+.held-list { border-top: 1px solid var(--line); padding-top: 6px; }
+.held-list h3 { font-size: 12px; color: var(--ink-2); padding-bottom: 3px; }
+.held-item { display: grid; grid-template-columns: auto minmax(0, 1.2fr) auto minmax(0, 1fr); gap: 8px; align-items: center; font-size: 12px; padding: 4px 0; border-bottom: 1px dashed var(--line); }
+.held-item:last-child { border-bottom: 0; }
+.held-item .clip { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); }
+.closing-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 9px var(--pad); border-top: 1px solid var(--line); }
+#closing-feedback { font-size: 12px; color: var(--ok); }
+#closing-feedback.error { color: var(--bad); }
+@media (max-width: 960px) { .closing-totals { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .closing-totals { grid-template-columns: repeat(2, minmax(0, 1fr)); } .held-item { grid-template-columns: auto minmax(0, 1fr); } }

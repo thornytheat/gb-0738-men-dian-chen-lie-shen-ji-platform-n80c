@@ -12,7 +12,7 @@
 | M3 照片证据 | 复核图证原件、同图复用和清点完备性 | `GET /api/photos` | `app/modules/photos/fingerprints.py` `app/modules/photos/bindings.py` `app/modules/photos/observations.py` | `tests/test_photos.py` |
 | M4 抽样覆盖 | 计算各店组柜位分配与待补缺口 | `GET /api/coverage` | `app/modules/coverage/sampling.py` `app/modules/coverage/service.py` | `tests/test_coverage.py` |
 | M5 罚则裁决 | 确定缺品、乱陈、排面和价签的处罚 | `GET /api/penalties` | `app/modules/penalties/rules.py` `app/modules/penalties/service.py` | `tests/test_penalties.py` |
-| M6 结算勾稽 | 按原件、柜位和金额对账并留存批次 | `GET /api/settlement` `POST /api/settlement/runs` | `app/modules/settlement/reconcile.py` `app/modules/settlement/service.py` `app/store.py` | `tests/test_settlement.py` |
+| M6 结算勾稽 | 按原件、柜位和金额对账、留存批次并做期末结转 | `GET /api/settlement` `POST /api/settlement/runs` `POST /api/settlement/runs/{id}/closings` | `app/modules/settlement/reconcile.py` `app/modules/settlement/service.py` `app/modules/settlement/closing.py` `app/store.py` | `tests/test_settlement.py` `tests/test_closing.py` |
 | M7 异议复核 | 留存复核时序、重算净额并导出 | `GET /api/appeals/{run_id}` `POST /api/appeals/{run_id}/events` | `app/modules/appeals/transitions.py` `app/modules/appeals/service.py` | `tests/test_appeals.py` |
 
 ## 陷阱登记
@@ -48,3 +48,13 @@
 - 原罚额 29 500 分＝15 000 缺品＋5 500 排面不足＋9 000 错品。
 - 七档原件均按源行号对账。清点表 50＝40 采信＋10 隔离；两条同柜矛盾行有各自来源。
 - 异议记录逐柜追加，最终净额从原罚额减去确认的减免。对账支持同计数但错行、元分混用和重复事件等反例。
+
+## 期末结转（M6 延伸）
+
+| 事项 | 样例与现象 | 朴素实现会怎样 | 本项目处理 | 位置 | 测试 |
+|---|---|---|---|---|---|
+| TRAP-29 | 本期待结前 `002:A03` 仍在复核 | 催结才结、或一直等导致无争议门店也拖住 | 按柜位当前异议状态整笔留待，其余门店照常结 | `app/modules/settlement/closing.py` | `tests/test_closing.py::test_closing_splits_each_store_between_settled_and_held` |
+| TRAP-30 | 同一版结算反复点「生成结转」 | 每点一次就再入账一次 | 台账指纹未变直接取回原版 | `app/modules/settlement/closing.py` `app/store.py` | `tests/test_closing.py::test_repeated_publish_of_same_ledger_never_double_counts` |
+| TRAP-31 | 留待柜位在截止后补到部分减免 | 已结金额未回冲，或整笔重结重复计入 | 新版只入账增量，旧版保留并可回查 | `app/modules/settlement/closing.py` | `tests/test_closing.py::test_late_reduction_books_only_the_increment_with_prior_version_basis` |
+| TRAP-32 | 结转落盘中途失败 | 半版数据覆盖旧版 | 单事务写入，失败整版回滚，旧版仍可读 | `app/store.py` | `tests/test_closing.py::test_failed_publication_leaves_previous_closing_intact` |
+| TRAP-33 | 已存结转记录被改动 | 错版照样发财务 | 校验和不符即拒绝出具 | `app/store.py` | `tests/test_closing.py::test_corrupted_stored_closing_cannot_be_served` |

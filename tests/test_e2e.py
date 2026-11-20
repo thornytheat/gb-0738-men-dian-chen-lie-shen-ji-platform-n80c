@@ -7,7 +7,7 @@ from conftest import appeal_payload
 def test_home_and_seven_action_entries(client, run):
     page = client.get('/')
     assert page.status_code == 200
-    assert all(word in page.text for word in ('证据严重度矩阵', '分层样本缺口', '运行审计', '导出证据'))
+    assert all(word in page.text for word in ('证据严重度矩阵', '分层样本缺口', '运行审计', '导出证据', '期末结转'))
     for stage, key in [('intake', 'stores'), ('plans', 'decisions'), ('photos', 'bindings'), ('coverage', 'strata'),
                        ('penalties', 'rows'), ('settlement', 'original_cents'), (f"appeals/{run['manifest']['run_id']}", 'net_cents')]:
         result = client.get(f'/api/{stage}')

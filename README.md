@@ -14,6 +14,8 @@ docker compose up --build
 
 可在「异议复核」选 `002:A03`，提交发起事件，再录入复核决定。部分减免 6000 分后，原罚额仍为 295 元、净罚额为 235 元。工具条可下载一份 JSON 证据。
 
+截止前若 `002:A03` 仍在复核，下方「期末结转」显示 002 东堤中心 150 元留待、001 与 005 共 145 元已可结。裁定减免后再生成一版，只入账 90 元增量，累计已结 235 元。样例结转单见 [reports/2026-11](reports/2026-11/README.md)。
+
 ```bash
 docker compose exec -T app pytest -q
 ```
@@ -29,6 +31,29 @@ uvicorn app.main:app --port 18427
 ```
 
 Compose 使用 `audit-data` 命名卷；本地数据库默认为 `data/audits.sqlite3`。可通过 `SHELF_DB_PATH` 指定新数据库。
+
+## 期末结转
+
+结算页下方的「期末结转」按门店拆分本期罚额中**已可结**与**留待复核**两部分：
+
+- 未发起异议、或异议已裁定（维持、全减、部分减免）的柜位进入已可结；只有仍处 `OPEN` 的柜位整笔留待，并在面板与结转单上标注该柜位当前异议版本、提交号、经办人和依据编号。
+- 「生成结转」在单个事务内按当前异议台账落一版结转。同一版台账重跑只取回原版（`reused: true`），不会重复计入已结金额；台账变化后再结转只入账增量，之前的已结金额记为 `previously_closed_cents`，晚到的减免不会重复冲减同一笔。
+- 落盘失败时整版回滚，上一版结转保持可读；已存记录带校验和，被改动即拒绝出具。
+- 结转单可下载 JSON 或 CSV，逐柜列出原罚额、减免、净额、本次入账、留待与异议依据；原罚额和异议来源仍可通过 `GET /api/settlement/runs/{run_id}` 与 `GET /api/appeals/{run_id}` 回查。
+
+```bash
+curl -s localhost:18427/api/settlement/runs/$RUN_ID/closings/preview
+curl -s -X POST localhost:18427/api/settlement/runs/$RUN_ID/closings
+curl -s localhost:18427/api/settlement/runs/$RUN_ID/closings/$CLOSING_ID/statement?format=csv
+```
+
+| 方法 | 路径 | 动作 |
+|---|---|---|
+| `GET` | `/api/settlement/runs/{run_id}/closings/preview` | 按当前异议台账预览，不写库 |
+| `POST` | `/api/settlement/runs/{run_id}/closings` | 发布一版结转；台账未变则原样取回 |
+| `GET` | `/api/settlement/runs/{run_id}/closings` | 列出各版结转及最新一版 |
+| `GET` | `/api/settlement/runs/{run_id}/closings/{closing_id}` | 读取某版完整结转 |
+| `GET` | `/api/settlement/runs/{run_id}/closings/{closing_id}/statement` | 财务结转单（`format=json|csv`）|
 
 ## 七个业务入口
 
